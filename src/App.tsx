@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useState, type FormEvent } from 'react'
 import {
   ArrowDownLeft,
   ArrowUpLeft,
@@ -6,6 +6,8 @@ import {
   Bot,
   BriefcaseBusiness,
   Building2,
+  CalendarCheck2,
+  Check,
   ChevronDown,
   ChevronLeft,
   CircleHelp,
@@ -62,6 +64,33 @@ const navItems = [
   { label: 'التقارير', icon: FileBarChart }
 ]
 
+const pricingPlans = [
+  {
+    name: 'Starter',
+    price: '199',
+    description: 'مثالي للشركات الصغيرة والمتوسطة',
+    badge: 'الأكثر طلباً',
+    features: ['لوحة تحكم مباشرة', 'إدارة الفواتير', 'تقارير أساسية', 'دعم البريد الإلكتروني'],
+    accent: 'primary'
+  },
+  {
+    name: 'Professional',
+    price: '499',
+    description: 'للنمو والتوسع في الإدارة',
+    badge: 'الأمثل',
+    features: ['كل مميزات Starter', 'تحليلات ذكية', 'إدارة المستخدمين', 'ملاحظات وعمليات تلقائية'],
+    accent: 'featured'
+  },
+  {
+    name: 'Enterprise',
+    price: '999',
+    description: 'للمؤسسات الكبيرة والمتعددة الفروع',
+    badge: 'مخصص',
+    features: ['كل مميزات Professional', 'تخصيص كامل', 'دعم فني مخصص', 'توافق أمان متقدم'],
+    accent: 'dark'
+  }
+]
+
 const defaultUser = {
   email: 'admin@solveai.com',
   password: 'admin123',
@@ -75,8 +104,9 @@ function App() {
   const [showAlerts, setShowAlerts] = useState(false)
   const [formData, setFormData] = useState({ email: defaultUser.email, password: defaultUser.password })
   const [error, setError] = useState('')
+  const [showPricing, setShowPricing] = useState(true)
 
-  const handleLogin = (event: React.FormEvent) => {
+  const handleLogin = (event: FormEvent) => {
     event.preventDefault()
 
     if (formData.email.trim() === defaultUser.email && formData.password === defaultUser.password) {
@@ -121,15 +151,15 @@ function App() {
                 <div className="feature-card small">
                   <div className="mini-icon purple"><CreditCard size={18} /></div>
                   <div>
-                    <strong>إدارة النقد</strong>
-                    <small>تحصيل ومصروفات</small>
+                    <strong>إدارة الاشتراكات</strong>
+                    <small>رسوم شهرية ودفعات آلية</small>
                   </div>
                 </div>
                 <div className="feature-card small">
                   <div className="mini-icon green"><BriefcaseBusiness size={18} /></div>
                   <div>
-                    <strong>التقارير</strong>
-                    <small>أداء فوري</small>
+                    <strong>مؤسسات وشركات</strong>
+                    <small>حلول قابلة للتطوير</small>
                   </div>
                 </div>
               </div>
@@ -196,12 +226,41 @@ function App() {
 
               <div className="divider"><span>أو</span></div>
 
-              <button type="button" className="secondary-button">
-                إنشاء حساب جديد
+              <button type="button" className="secondary-button" onClick={() => setShowPricing(true)}>
+                مشاهدة الأسعار
               </button>
             </form>
           </div>
         </div>
+
+        {showPricing ? (
+          <div className="pricing-overlay">
+            <div className="pricing-modal">
+              <button className="close-modal" onClick={() => setShowPricing(false)}><X size={18} /></button>
+              <div className="pricing-header">
+                <p>خطط الاشتراك</p>
+                <h3>اختر الخطة المناسبة</h3>
+              </div>
+
+              <div className="pricing-grid">
+                {pricingPlans.map((plan) => (
+                  <div key={plan.name} className={`pricing-card ${plan.accent}`}>
+                    <span className="plan-badge">{plan.badge}</span>
+                    <h4>{plan.name}</h4>
+                    <div className="plan-price"><strong>{plan.price}</strong> <span>ر.س / شهر</span></div>
+                    <p>{plan.description}</p>
+                    <ul>
+                      {plan.features.map((feature) => (
+                        <li key={feature}><Check size={14} /> {feature}</li>
+                      ))}
+                    </ul>
+                    <button className="primary-button plan-button">ابدأ الآن</button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        ) : null}
       </div>
     )
   }
@@ -252,7 +311,7 @@ function App() {
           <div className="upgrade-icon"><Zap size={15} /></div>
           <div>
             <strong>تحسين الحساب</strong>
-            <small>استكشف مزا��ا Solve Pro</small>
+            <small>استكشف مزايا Solve Pro</small>
           </div>
           <ChevronLeft size={16} />
         </div>
@@ -301,10 +360,25 @@ function App() {
             <div>
               <p className="eyebrow">الأحد، 30 يونيو 2024</p>
               <h1>صباح الخير، {defaultUser.name} <span>👋</span></h1>
-              <p className="subheading">إليك ملخص أداء شركتك اليوم.</p>
+              <p className="subheading">إليك ملخص أداء شركتك اليوم، مع مراجعة اشتراك المؤسسة.</p>
             </div>
-            <button className="primary-button small-gap"><Plus size={18} />معاملة جديدة</button>
+            <div className="header-actions">
+              <button className="secondary-button small-btn"><CalendarCheck2 size={16} /> خطة الاشتراك</button>
+              <button className="primary-button small-gap"><Plus size={18} />معاملة جديدة</button>
+            </div>
           </div>
+
+          <section className="subscription-highlight">
+            <div className="sub-left">
+              <div className="sub-badge"><Building2 size={15} /> Professional</div>
+              <strong>خطة احترافية مخصصة للشركات النامية</strong>
+              <p>تشغيل كامل للمنظومة، تحليل ذكي، دعم فني، وآلية الفوترة التلقائية.</p>
+            </div>
+            <div className="sub-price">
+              <span>499 ر.س</span>
+              <small>شهرياً</small>
+            </div>
+          </section>
 
           <section className="stats-grid">
             <StatCard title="الرصيد الحالي" value={accountSummary.balance} suffix="ر.س" change="+12.5%" icon={WalletCards} color="purple" positive />
